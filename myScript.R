@@ -3,7 +3,7 @@ x <- 2
 y <- 4
 m <- 1:10
 dim(m) <- c(2,5)
-m
+
 
 x<-data.frame(foo=1:4,bar=c(T,T,F,F))
 nrow(x)
