@@ -12,13 +12,13 @@ ncol(x)
 m <- matrix(1:9,nrow=3,ncol=3)
 dimnames(m) <- list(c("a","b","c"),c("d","e","f"))
 
-# Read from text file
-
 setwd("./")
 
+# Read from text file
+
 ## Using readLines
-path <- paste(getwd(),"Data/Textual Analysis/Text.txt",sep="/")
-file_con = file(description = path, open = "r", blocking = TRUE, encoding = getOption("encoding"), raw = FALSE)
+file_path <- paste(getwd(),"Data/Textual Analysis/Text.txt",sep="/")
+file_con = file(description = file_path, open = "r", blocking = TRUE, encoding = getOption("encoding"), raw = FALSE)
 lines = readLines(con = file_con, n = -1L, ok = TRUE, warn = TRUE, encoding = "unknown", skipNul = FALSE)
 x <- 7
 
@@ -31,6 +31,40 @@ colClasses_values <- c("numeric","numeric","Date","character","numeric","numeric
 dataFrame <- read.csv(file_path,header=TRUE,sep=",",quote="\"",dec=".",comment.char="",row.names=NULL,colClasses=colClasses_values)
 #dataFrame <- read.csv(file_path,header=TRUE,sep=",",quote="\"",dec=".",comment.char="",row.names=NULL)
 save(dataFrame,file=save_path)
+
+## From JSON
+file_path <- paste(getwd(),"Data/square.csv",sep="/")
+file_con = file(description = file_path, open = "r", blocking = TRUE, encoding = getOption("encoding"), raw = FALSE)
+lines = readLines(con = file_con, n = -1L, ok = TRUE, warn = TRUE, encoding = "unknown", skipNul = FALSE)
+jsonData <- fromJSON(lines)
+
+## From Twitter
+API_key <- "M0QtsPiAT92DoFKCZZ7QlRitZ"
+API_secret <- "99UqDRqGK0Vit1VJspIbKqKCrVhlNYdQvIG99dkFhyNSH0si8f"
+#Acces_token <- "2521122996-2Ct0A0YMalz0YbatR2A6xZzMg9NSWLTQUYHVqbD"
+#Access_token_secret <- "6gjXNlTTLUZGnKEzbkazMcipNbgmXM5uOhwP5s3LDfHRY"
+getTwitterOAuth(consumer_key=API_key,consumer_secret=API_secret)
+
+requestURL <-  "https://api.twitter.com/oauth/request_token"
+accessURL =    "https://api.twitter.com/oauth/access_token"
+authURL =      "https://api.twitter.com/oauth/authorize"
+consumerKey =   "M0QtsPiAT92DoFKCZZ7QlRitZ"
+consumerSecret = "99UqDRqGK0Vit1VJspIbKqKCrVhlNYdQvIG99dkFhyNSH0si8f"
+twitCred <- OAuthFactory$new(consumerKey=consumerKey,
+                             consumerSecret=consumerSecret,
+                             requestURL=requestURL,
+                             accessURL=accessURL,
+                             authURL=authURL)
+download.file(url="http://curl.haxx.se/ca/cacert.pem",
+              destfile="cacert.pem")
+twitCred$handshake(cainfo="cacert.pem")
+#save for later use for Windows
+save(twitCred, file="twitter_authentication.Rdata")
+registerTwitterOAuth(twitCred)
+
+# Grab information
+me <- getUser("DiscoveryDash", cainfo="cacert.pem")
+followers <- me$getFollowers(cainfo="cacert.pem")
 
 # Loop
 for(i in 1:10) {
