@@ -14,6 +14,54 @@ dimnames(m) <- list(c("a","b","c"),c("d","e","f"))
 
 setwd("./")
 
+# Testing function
+myFunction = function(bool) {
+    if(bool) {
+        return("Hello World")
+    } else {
+        return("Hello Nobody")
+    }
+}
+
+# Read from mySQL database
+
+ucscDb <- dbConnect(MySQL(),user="genome",host="genome-mysql.cse.ucsc.edu")
+result <- dbGetQuery(ucscDb,"show databases;")
+dbDisconnect(ucscDb)
+
+# Get Google Map Data
+library(ggmap)
+## example of map of Dhangadhi, Nepal  
+dhanmap1 = get_map(location = c(lon = 80.56410278, lat = 28.7089375), zoom = 12, maptype = 'roadmap', source = "google")
+dhanmap1 = ggmap(dhanmap1)
+dhanmap1 
+
+## plotting over map 
+
+dhanmap5 = get_map(location = c(lon = 80.56410278, lat = 28.7089375), zoom = 14, maptype = 'roadmap', source = "google")
+dhanmap5 = ggmap(dhanmap5)
+
+## data
+set.seed(1234)
+lon <- runif (40, 80.54, 80.59)
+lat <- runif (40, 28.69, 28.73) 
+varA = rnorm (40, 20, 10)
+myd <- data.frame (lon, lat, varA)
+
+## the bubble chart
+library(grid)
+dhanmap5 +   geom_point(aes(x = lon, y = lat, colour = varA, size = varA, alpha = 0.9), data = myd)  + scale_colour_gradient(low="yellow", high="red")
+
+
+
+# plotting world cities
+require(maps)
+map("world")
+data(world.cities)
+## cities with minimum 20,000 population
+map.cities(world.cities, country = "", minpop = 20000, maxpop = Inf,
+           pch = ".", col = "red")
+
 # Read from text file
 
 ## Using readLines
@@ -31,6 +79,8 @@ colClasses_values <- c("numeric","numeric","Date","character","numeric","numeric
 dataFrame <- read.csv(file_path,header=TRUE,sep=",",quote="\"",dec=".",comment.char="",row.names=NULL,colClasses=colClasses_values)
 #dataFrame <- read.csv(file_path,header=TRUE,sep=",",quote="\"",dec=".",comment.char="",row.names=NULL)
 save(dataFrame,file=save_path)
+# Subset the results
+str(dataFrame[dataFrame$Row.ID %in% c(1,49),])
 
 ## From JSON
 file_path <- paste(getwd(),"Data/square.csv",sep="/")
@@ -41,8 +91,8 @@ jsonData <- fromJSON(lines)
 ## From Twitter
 API_key <- "M0QtsPiAT92DoFKCZZ7QlRitZ"
 API_secret <- "99UqDRqGK0Vit1VJspIbKqKCrVhlNYdQvIG99dkFhyNSH0si8f"
-#Acces_token <- "2521122996-2Ct0A0YMalz0YbatR2A6xZzMg9NSWLTQUYHVqbD"
-#Access_token_secret <- "6gjXNlTTLUZGnKEzbkazMcipNbgmXM5uOhwP5s3LDfHRY"
+Access_token <- "2521122996-2Ct0A0YMalz0YbatR2A6xZzMg9NSWLTQUYHVqbD"
+Access_token_secret <- "6gjXNlTTLUZGnKEzbkazMcipNbgmXM5uOhwP5s3LDfHRY"
 getTwitterOAuth(consumer_key=API_key,consumer_secret=API_secret)
 
 requestURL <-  "https://api.twitter.com/oauth/request_token"
